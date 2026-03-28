@@ -28,75 +28,69 @@ const ICON_MAP: Record<string, IconComponent> = {
   Zap, Coins, SendHorizontal, FileSearch,
 } as Record<string, IconComponent>;
 
-const STATUS_STYLES: Record<string, { border: string; dot: string }> = {
-  idle: { border: "border-[#2d2450]", dot: "bg-[#5d4f8a]" },
-  running: { border: "border-[#836EF9] monad-pulse", dot: "bg-[#836EF9] animate-pulse" },
-  success: { border: "border-emerald-500", dot: "bg-emerald-500" },
-  error: { border: "border-red-500", dot: "bg-red-500" },
-  timeout: { border: "border-amber-500", dot: "bg-amber-500" },
-};
-
 type AgentFlowNode = Node<CanvasNodeData>;
 
 function AgentNode({ data, selected }: NodeProps<AgentFlowNode>) {
   const IconComp = (ICON_MAP[data.iconKey as string] ?? Box) as IconComponent;
   const categoryColor = CATEGORY_COLORS[data.category as string] ?? "#836EF9";
   const execStatus = (data.executionStatus as string) ?? "idle";
-  const styles = STATUS_STYLES[execStatus] ?? STATUS_STYLES.idle;
   const hasError = execStatus === "error" && data.executionError;
+
+  const statusClass =
+    execStatus === "running" ? "node-running" :
+    execStatus === "error" ? "node-error" :
+    execStatus === "success" ? "node-done" : "";
+
+  const dotClass =
+    execStatus === "running" ? "bg-[#836EF9] animate-pulse" :
+    execStatus === "error" ? "bg-[#f87171]" :
+    execStatus === "success" ? "bg-[#4ade80]" : "bg-[#5a587a]";
 
   return (
     <div
       className={cn(
-        "bg-[#1a1230] border rounded-lg w-[210px] cursor-pointer select-none",
-        "transition-all duration-200 backdrop-blur-sm",
-        styles.border,
-        selected && "ring-1 ring-[#836EF9] ring-offset-0 ring-offset-transparent",
+        "w-[210px] cursor-pointer select-none rounded-[10px] transition-all duration-200",
+        statusClass,
+        selected && "ring-1 ring-[#836EF9]"
       )}
       style={{
-        boxShadow: execStatus === "running"
-          ? "0 0 20px rgba(131, 110, 249, 0.2)"
-          : "0 2px 8px rgba(0, 0, 0, 0.3)",
+        background: "var(--bg-node)",
+        border: statusClass ? undefined : "1px solid var(--purple-border)",
+        fontFamily: "var(--font-jetbrains), monospace",
       }}
     >
-      {/* Top accent bar */}
-      <div
-        className="h-[3px] rounded-t-lg w-full"
-        style={{ backgroundColor: categoryColor }}
-      />
+      {/* Accent bar */}
+      <div className="h-[3px] rounded-t-[10px] w-full" style={{ backgroundColor: categoryColor }} />
 
       {/* Header */}
-      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-[#2d2450]">
-        <div
-          className="flex items-center justify-center w-7 h-7 rounded-md flex-shrink-0"
-          style={{ backgroundColor: `${categoryColor}20` }}
-        >
+      <div className="flex items-center gap-2 px-3 py-2.5" style={{ borderBottom: "1px solid var(--purple-border)" }}>
+        <div className="flex items-center justify-center w-7 h-7 rounded-md flex-shrink-0" style={{ backgroundColor: `${categoryColor}18` }}>
           <IconComp size={14} color={categoryColor} />
         </div>
-        <span className="text-[12px] font-medium text-[#f0ecf9] truncate flex-1">
+        <span className="text-[12px] font-medium truncate flex-1" style={{ color: "var(--text-primary)" }}>
           {data.agentName as string}
         </span>
-        <div className={cn("w-2 h-2 rounded-full flex-shrink-0", styles.dot)} />
+        <div className={cn("w-2 h-2 rounded-full flex-shrink-0", dotClass)} />
       </div>
 
-      {/* Sponsor */}
+      {/* Sponsor + parallel group badge */}
       <div className="px-3 py-1.5 flex items-center justify-between">
-        <span className="text-[10px] text-[#5d4f8a] uppercase tracking-wide">
-          {data.sponsor as string}
+        <span className="text-[10px] tracking-[1px]" style={{ color: "var(--text-muted)" }}>
+          {(data.sponsor as string).toUpperCase()}
         </span>
         {(data.groupIndex as number | undefined) !== undefined && execStatus === "running" && (
-          <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded bg-[#836EF9]/20 text-[#836EF9] uppercase tracking-wider">
+          <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded" style={{ background: "var(--purple-glow)", color: "var(--purple-primary)" }}>
             G{((data.groupIndex as number) + 1)}
           </span>
         )}
       </div>
 
-      {/* Error detail */}
+      {/* Error inline */}
       {hasError && (
         <div className="px-3 pb-2">
-          <div className="flex items-center gap-1 bg-red-500/10 border border-red-700/30 rounded px-2 py-1">
-            <AlertCircle size={10} className="text-red-400 flex-shrink-0" />
-            <span className="text-[9px] text-red-400 truncate">
+          <div className="flex items-center gap-1.5 rounded px-2 py-1" style={{ background: "#f8717115", border: "1px solid #f8717140" }}>
+            <AlertCircle size={10} className="flex-shrink-0" style={{ color: "var(--red-error)" }} />
+            <span className="text-[9px] truncate" style={{ color: "var(--red-error)" }}>
               {data.executionError as string}
             </span>
           </div>
@@ -104,16 +98,8 @@ function AgentNode({ data, selected }: NodeProps<AgentFlowNode>) {
       )}
 
       {/* Handles */}
-      <Handle
-        type="target"
-        position={Position.Left}
-        className="!w-2.5 !h-2.5 !bg-[#5d4f8a] !border-[#2d2450] !border hover:!bg-[#836EF9] transition-colors"
-      />
-      <Handle
-        type="source"
-        position={Position.Right}
-        className="!w-2.5 !h-2.5 !bg-[#5d4f8a] !border-[#2d2450] !border hover:!bg-[#836EF9] transition-colors"
-      />
+      <Handle type="target" position={Position.Left} className="!w-2.5 !h-2.5 !border !rounded-full transition-colors" style={{ background: "var(--text-muted)", borderColor: "var(--purple-border)" }} />
+      <Handle type="source" position={Position.Right} className="!w-2.5 !h-2.5 !border !rounded-full transition-colors" style={{ background: "var(--text-muted)", borderColor: "var(--purple-border)" }} />
     </div>
   );
 }

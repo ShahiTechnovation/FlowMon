@@ -309,6 +309,6 @@ src/
 
 ---
 
-*Built for Synthesis Hackathon. Powered by Monad energy. Deployed at the speed of parallel EVM.*
+*Built for Monad Blitz Hackathon. Powered by Monad energy. Deployed at the speed of parallel EVM.*
 
 **MIT License**
