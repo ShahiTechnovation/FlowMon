@@ -290,7 +290,6 @@ src/
 | ENS | 2 | Name resolution live |
 | SELF Protocol | 1 | Attestation flow live |
 | Snapshot | 1 | DAO vote query live |
-| Base | 1 | L2 TX execution |
 | Lit Protocol | 2 | Access control + PKP |
 | Olas | 2 | Agent deployment live |
 | SuperRare | 2 | Listing + bidding live |

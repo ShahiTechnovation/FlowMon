@@ -2,10 +2,14 @@
 // API Route: /api/agent-execute
 // Executes a specific agent action. Routes to internal handlers
 // or external endpoints. Supports AMP protocol.
+//
+// Internal agents are called DIRECTLY (no self-referential HTTP)
+// to avoid Next.js dev-server dead-locks and HTML error pages.
 // ============================================================
 
 import { NextRequest, NextResponse } from "next/server";
 import { clampTimeout } from "@/lib/server-timeout";
+import { POST as agentHandler } from "@/app/api/agents/[agentId]/route";
 
 export const maxDuration = 60;
 
@@ -26,11 +30,9 @@ export async function POST(request: NextRequest) {
     const body: AgentExecuteRequest = await request.json();
     const { agentId, parameterValues, upstreamResult, endpointUrl, flowId, stepNumber } = body;
 
-    // Route internal /api/agents/... paths
+    // Route internal /api/agents/... paths — call handler directly
     if (endpointUrl && endpointUrl.startsWith("/api/agents/")) {
-      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-      const absoluteUrl = `${baseUrl}${endpointUrl}`;
-      return await executeInternalAgent(agentId, absoluteUrl, parameterValues, upstreamResult, flowId, stepNumber, startTime);
+      return await executeInternalAgent(agentId, parameterValues, upstreamResult, flowId, stepNumber, startTime);
     }
 
     // External endpoints
@@ -68,7 +70,6 @@ export async function POST(request: NextRequest) {
 
 async function executeInternalAgent(
   agentId: string,
-  absoluteUrl: string,
   params: Record<string, string>,
   upstreamResult: Record<string, unknown> | undefined,
   flowId: string,
@@ -76,30 +77,54 @@ async function executeInternalAgent(
   startTime: number,
 ): Promise<NextResponse> {
   try {
-    const response = await fetch(absoluteUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Flow-Id": flowId,
-        "X-Step": String(step),
-      },
-      body: JSON.stringify({
-        ...params,
-        ...(upstreamResult ? { _upstream: JSON.stringify(upstreamResult) } : {}),
-      }),
-      signal: AbortSignal.timeout(clampTimeout(55000)),
-    });
+    // Build a synthetic NextRequest for the agent handler
+    const syntheticBody = {
+      ...params,
+      ...(upstreamResult ? { _upstream: JSON.stringify(upstreamResult) } : {}),
+    };
 
-    const data = await response.json();
+    const syntheticRequest = new NextRequest(
+      new URL(`http://localhost/api/agents/${agentId}`),
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Flow-Id": flowId,
+          "X-Step": String(step),
+        },
+        body: JSON.stringify(syntheticBody),
+      }
+    );
 
-    if (!response.ok || data.success === false) {
+    // Call the handler directly — no HTTP round-trip
+    const response = await agentHandler(
+      syntheticRequest,
+      { params: Promise.resolve({ agentId }) }
+    );
+
+    // Parse the response body
+    const text = await response.text();
+    let data: Record<string, unknown>;
+    try {
+      data = JSON.parse(text);
+    } catch {
       return NextResponse.json({
         success: false,
         agentId,
-        error: data.error || `Agent returned ${response.status}`,
+        error: `Agent returned invalid JSON (status ${response.status})`,
         executionTimeMs: Date.now() - startTime,
         source: "agent-api",
-      }, { status: response.ok ? 500 : response.status });
+      }, { status: 500 });
+    }
+
+    if (response.status >= 400 || data.success === false) {
+      return NextResponse.json({
+        success: false,
+        agentId,
+        error: (data.error as string) || `Agent returned ${response.status}`,
+        executionTimeMs: Date.now() - startTime,
+        source: "agent-api",
+      }, { status: response.status >= 400 ? response.status : 500 });
     }
 
     return NextResponse.json({
