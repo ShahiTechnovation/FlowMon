@@ -2,118 +2,205 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { AGENT_REGISTRY, CATEGORY_COLORS } from "@/data/agent-registry";
+import Image from "next/image";
 
-/* ── Navbar ────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   NAVBAR
+   ═══════════════════════════════════════════════════════════════ */
 function Navbar() {
   return (
-    <nav className="sticky top-0 z-50 flex items-center justify-between px-6 py-4" style={{ background: "var(--bg-base)", borderBottom: "1px solid #836EF918" }}>
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--purple-primary)" }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
+    <nav
+      id="navbar"
+      style={{
+        position: "sticky",
+        top: 0,
+        zIndex: 50,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "16px 40px",
+        background: "rgba(15,15,20,0.85)",
+        backdropFilter: "blur(16px)",
+        borderBottom: "1px solid var(--border-subtle)",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div
+          style={{
+            width: 32,
+            height: 32,
+            borderRadius: 8,
+            background: "var(--purple-primary)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+          </svg>
         </div>
-        <span className="font-heading text-[14px]" style={{ color: "var(--purple-primary)" }}>FLOWMON</span>
+        <span className="font-heading" style={{ fontSize: 20, color: "var(--text-primary)", letterSpacing: "0.5px" }}>
+          FlowMon
+        </span>
       </div>
-      <div className="flex items-center gap-4">
-        <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-[13px] transition-colors" style={{ color: "var(--text-muted)", fontFamily: "var(--font-jetbrains), monospace" }} onMouseEnter={e => (e.currentTarget.style.color = "var(--text-primary)")} onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}>
+
+      <div style={{ display: "flex", alignItems: "center", gap: "32px" }}>
+        {["Features", "Pricing", "Insights"].map((item) => (
+          <a
+            key={item}
+            href={`#${item.toLowerCase()}`}
+            style={{
+              color: "var(--text-muted)",
+              fontSize: 14,
+              textDecoration: "none",
+              transition: "color 0.2s",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text-primary)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
+          >
+            {item}
+          </a>
+        ))}
+        <a
+          href="https://github.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            color: "var(--text-muted)",
+            fontSize: 14,
+            textDecoration: "none",
+            transition: "color 0.2s",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text-primary)")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
+        >
           GitHub
         </a>
-        <Link href="/app" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md text-[13px] font-medium transition-colors" style={{ background: "var(--purple-primary)", color: "var(--bg-base)", fontFamily: "var(--font-jetbrains), monospace" }} onMouseEnter={e => (e.currentTarget.style.background = "#9d88fb")} onMouseLeave={e => (e.currentTarget.style.background = "var(--purple-primary)")}>
-          Launch App →
+        <Link href="/app" className="btn-primary" style={{ padding: "10px 24px", fontSize: 13 }}>
+          Launch App
         </Link>
       </div>
     </nav>
   );
 }
 
-/* ── Hero ──────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   HERO
+   ═══════════════════════════════════════════════════════════════ */
 function Hero() {
   return (
-    <section className="flex flex-col items-center justify-center text-center px-6" style={{ minHeight: "calc(100vh - 64px)" }}>
-      <p className="text-[11px] tracking-[3px] mb-8" style={{ color: "var(--text-muted)", fontFamily: "var(--font-jetbrains), monospace", letterSpacing: "3px" }}>
-        {"//"} MONAD NATIVE · VISUAL MULTI-AGENT ORCHESTRATION
-      </p>
-
-      <h1 className="font-heading text-[44px] leading-[1.3] mb-6" style={{ color: "var(--purple-primary)" }}>
-        FLOWMON
-      </h1>
-
-      <p className="text-[15px] leading-relaxed max-w-[520px] mb-10" style={{ color: "var(--text-secondary)", fontFamily: "var(--font-jetbrains), monospace" }}>
-        Drag. Wire. Execute. 48 production agents across DeFi, identity, and governance — running in parallel on Monad.
-      </p>
-
-      <div className="flex items-center gap-3">
-        <Link href="/app" className="inline-flex items-center gap-2 px-6 py-3 rounded-md text-[13px] font-medium transition-colors" style={{ background: "var(--purple-primary)", color: "var(--bg-base)", fontFamily: "var(--font-jetbrains), monospace" }} onMouseEnter={e => (e.currentTarget.style.background = "#9d88fb")} onMouseLeave={e => (e.currentTarget.style.background = "var(--purple-primary)")}>
-          Launch App →
-        </Link>
-        <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 rounded-md text-[13px] font-medium transition-colors" style={{ background: "transparent", color: "var(--text-secondary)", border: "1px solid var(--purple-border)", fontFamily: "var(--font-jetbrains), monospace" }} onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--purple-primary)"; e.currentTarget.style.color = "var(--text-primary)"; }} onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--purple-border)"; e.currentTarget.style.color = "var(--text-secondary)"; }}>
-          GitHub ↗
-        </a>
-      </div>
-
-      <p className="text-[12px] mt-8" style={{ color: "var(--text-muted)", fontFamily: "var(--font-jetbrains), monospace" }}>
-        No glue code. No boilerplate. Real API calls. Real data.
-      </p>
-    </section>
-  );
-}
-
-/* ── Install Command Strip ─────────────────────────────────── */
-function CommandStrip() {
-  const [activeTab, setActiveTab] = useState(0);
-  const commands = [
-    "npx flowmon list-agents",
-    'npx flowmon build "yield optimizer with Lido and Uniswap"',
-  ];
-  const tabs = ["All Agents", "Tell your Agent"];
-
-  return (
-    <section className="flex flex-col items-center px-6 mt-12">
-      <div className="flex gap-0">
-        {tabs.map((tab, i) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(i)}
-            className="px-5 py-2.5 text-[12px] transition-colors"
-            style={{
-              color: activeTab === i ? "var(--purple-primary)" : "var(--text-muted)",
-              borderBottom: activeTab === i ? "2px solid var(--purple-primary)" : "2px solid transparent",
-              background: "transparent",
-              fontFamily: "var(--font-jetbrains), monospace",
-            }}
+    <section
+      id="hero"
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 48,
+        maxWidth: 1200,
+        margin: "0 auto",
+        padding: "80px 40px 60px",
+        minHeight: "85vh",
+      }}
+    >
+      {/* Left content */}
+      <div className="animate-fade-in" style={{ maxWidth: 560, flex: 1 }}>
+        <h1
+          className="font-heading"
+          style={{
+            fontSize: 52,
+            lineHeight: 1.15,
+            color: "var(--text-primary)",
+            marginBottom: 20,
+          }}
+        >
+          Your Multi-Agent{" "}
+          <span className="text-accent" style={{ display: "block" }}>
+            Orchestrator
+          </span>
+        </h1>
+        <p
+          style={{
+            fontSize: 16,
+            lineHeight: 1.7,
+            color: "var(--text-secondary)",
+            marginBottom: 36,
+            maxWidth: 460,
+          }}
+        >
+          Unlock parallel execution. Seamlessly drag, wire, and execute 48 production agents across DeFi, identity, and governance — running natively on Monad.
+        </p>
+        <div style={{ display: "flex", gap: 12 }}>
+          <Link href="/app" className="btn-primary">
+            Get Started
+          </Link>
+          <a
+            href="https://github.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-outline"
           >
-            {tab}
-          </button>
-        ))}
+            View Templates
+          </a>
+        </div>
       </div>
-      <div className="mt-4 px-6 py-4 rounded-md max-w-[640px] w-full" style={{ background: "var(--bg-surface)", border: "1px solid var(--purple-border)" }}>
-        <code className="text-[14px]" style={{ color: "var(--text-code)", fontFamily: "var(--font-jetbrains), monospace" }}>
-          {commands[activeTab]}<span className="cursor-blink" />
-        </code>
+
+      {/* Right hero image */}
+      <div className="animate-fade-in-delay-2" style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+        <div
+          style={{
+            width: 480,
+            height: 480,
+            borderRadius: "var(--radius-xl)",
+            overflow: "hidden",
+            position: "relative",
+          }}
+        >
+          <Image
+            src="/images/hero-render.png"
+            alt="Abstract 3D orchestration visualization"
+            fill
+            style={{ objectFit: "cover" }}
+            priority
+          />
+        </div>
       </div>
     </section>
   );
 }
 
-/* ── Works With Strip ──────────────────────────────────────── */
-function WorksWith() {
-  const protocols = ["Monad", "Uniswap", "Lido", "Chainlink", "ENS", "MetaMask", "Venice.ai", "Base", "Bankr"];
+/* ═══════════════════════════════════════════════════════════════
+   LOGO STRIP
+   ═══════════════════════════════════════════════════════════════ */
+const PROTOCOLS = ["Monad", "Uniswap", "Lido", "Chainlink", "ENS", "MetaMask", "Venice.ai", "Base", "Bankr"];
 
+function LogoStrip() {
   return (
-    <section className="flex flex-col items-center px-6 mt-16">
-      <p className="text-[11px] tracking-[2px] mb-6" style={{ color: "var(--text-muted)", fontFamily: "var(--font-jetbrains), monospace" }}>
-        WORKS WITH
-      </p>
-      <div className="flex items-center gap-6 flex-wrap justify-center">
-        {protocols.map((p) => (
+    <section
+      style={{
+        padding: "32px 0",
+        borderTop: "1px solid var(--border-subtle)",
+        borderBottom: "1px solid var(--border-subtle)",
+        overflow: "hidden",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 56, flexWrap: "wrap", padding: "0 40px" }}>
+        {PROTOCOLS.map((name) => (
           <span
-            key={p}
-            className="text-[12px] transition-all cursor-default"
-            style={{ color: "var(--text-muted)", fontFamily: "var(--font-jetbrains), monospace", opacity: 0.5 }}
-            onMouseEnter={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.color = "var(--text-primary)"; }}
-            onMouseLeave={e => { e.currentTarget.style.opacity = "0.5"; e.currentTarget.style.color = "var(--text-muted)"; }}
+            key={name}
+            style={{
+              fontSize: 15,
+              fontWeight: 600,
+              color: "var(--text-muted)",
+              letterSpacing: "0.5px",
+              opacity: 0.6,
+              transition: "opacity 0.2s",
+              cursor: "default",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.6")}
           >
-            {p}
+            ◆ {name}
           </span>
         ))}
       </div>
@@ -121,179 +208,558 @@ function WorksWith() {
   );
 }
 
-/* ── Feature Grid ──────────────────────────────────────────── */
-const FEATURES = [
-  { icon: "⚡", title: "Parallel Execution", body: "Independent agents fire simultaneously — Kahn's algorithm, Promise.all(). Built for Monad's parallel EVM." },
-  { icon: "🔌", title: "48 Live Agents", body: "Every agent hits a real external API. Chainlink prices. Lido APR. Uniswap quotes. Zero mock data." },
-  { icon: "🤖", title: "Agent X", body: 'Type "build me a yield optimizer" — Agent X wires the full pipeline on the canvas automatically.' },
-  { icon: "🟣", title: "Monad Native", body: "MON balance, Monad TX executor, contract reader — five agents purpose-built for the Monad testnet." },
-  { icon: "🔗", title: "AMP Protocol", body: "Standardized JSON envelopes. One agent's output is the next agent's input. No glue code ever." },
-  { icon: "💾", title: "Pipeline Saves", body: "Name and save any pipeline. Auto-restored on reload. Share via export. Build once, run forever." },
-  { icon: "🔍", title: "Real-time Logs", body: "Execution trace with timestamps, parallel groups color-coded, error messages surfaced immediately." },
-  { icon: "🔑", title: "No Lock-in", body: "MIT license. Self-host. Add your own agents. Publish to the community registry." },
+/* ═══════════════════════════════════════════════════════════════
+   FEATURES — "Unleash Your Pipelines"
+   ═══════════════════════════════════════════════════════════════ */
+const FEATURE_STEPS = [
+  {
+    title: "Upload Brief",
+    body: "Define your pipeline requirements. Describe what protocols you need and our AI grasps your vision.",
+    icon: (
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+    ),
+  },
+  {
+    title: "Generate Designs",
+    body: "Watch our AI compose optimal agent configurations, selecting the best protocols tailored to your workflow.",
+    icon: (
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><line x1="3" y1="9" x2="21" y2="9" /><line x1="9" y1="21" x2="9" y2="9" /></svg>
+    ),
+  },
+  {
+    title: "Refine Creation",
+    body: "Perfect your pipeline with visual editing. Drag, wire, and configure 48 agents until you achieve flow perfection.",
+    icon: (
+      <svg viewBox="0 0 24 24"><path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z" /></svg>
+    ),
+  },
 ];
 
-function FeatureGrid() {
+function Features() {
   return (
-    <section className="flex flex-col items-center px-6 mt-24">
-      <p className="text-[11px] tracking-[3px] mb-10" style={{ color: "var(--text-muted)", fontFamily: "var(--font-jetbrains), monospace" }}>
-        {"//"} WHY FLOWMON
+    <section id="features" className="section" style={{ textAlign: "center" }}>
+      <h2
+        className="font-heading"
+        style={{
+          fontSize: 42,
+          color: "var(--text-primary)",
+          marginBottom: 16,
+        }}
+      >
+        Unleash Your <span className="text-accent">Pipelines</span>
+      </h2>
+      <p
+        style={{
+          fontSize: 15,
+          color: "var(--text-secondary)",
+          maxWidth: 560,
+          margin: "0 auto 56px",
+          lineHeight: 1.7,
+        }}
+      >
+        Discover how our AI-Powered Agent Orchestrator transforms your ideas into running pipelines effortlessly. Follow these simple steps to turn your vision into reality.
       </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-[920px] w-full">
-        {FEATURES.map((f) => (
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: 24,
+          maxWidth: 960,
+          margin: "0 auto",
+        }}
+      >
+        {FEATURE_STEPS.map((step) => (
           <div
-            key={f.title}
-            className="p-6 rounded-[10px] transition-all"
-            style={{ background: "var(--bg-surface)", border: "1px solid var(--purple-border)" }}
-            onMouseEnter={e => (e.currentTarget.style.borderColor = "var(--purple-primary)")}
-            onMouseLeave={e => (e.currentTarget.style.borderColor = "var(--purple-border)")}
+            key={step.title}
+            className="card"
+            style={{ padding: "40px 28px", textAlign: "center" }}
           >
-            <span className="text-[20px] block mb-3">{f.icon}</span>
-            <h3 className="text-[14px] font-medium mb-2" style={{ color: "var(--text-primary)", fontFamily: "var(--font-jetbrains), monospace" }}>{f.title}</h3>
-            <p className="text-[12px] leading-relaxed" style={{ color: "var(--text-secondary)", fontFamily: "var(--font-jetbrains), monospace" }}>{f.body}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-/* ── How It Works ──────────────────────────────────────────── */
-const STEPS = [
-  { num: "01", title: "Drag agents", body: "Pick from 48 protocol agents in the sidebar. Drag onto the visual canvas." },
-  { num: "02", title: "Wire them", body: "Draw connections to define data flow. Outputs become inputs automatically via AMP." },
-  { num: "03", title: "Execute", body: "Hit Run. Parallel groups fire simultaneously. Watch live data stream in real-time." },
-];
-
-function HowItWorks() {
-  return (
-    <section className="flex flex-col items-center px-6 mt-24">
-      <p className="text-[11px] tracking-[3px] mb-10" style={{ color: "var(--text-muted)", fontFamily: "var(--font-jetbrains), monospace" }}>
-        {"//"} HOW IT WORKS
-      </p>
-      <div className="flex flex-col md:flex-row items-stretch gap-4 max-w-[820px] w-full">
-        {STEPS.map((s, i) => (
-          <div key={s.num} className="flex items-center flex-1 gap-4">
-            <div className="flex-1 p-6 rounded-[10px]" style={{ background: "var(--bg-surface)", border: "1px solid var(--purple-border)" }}>
-              <span className="font-heading text-[12px] block mb-3" style={{ color: "var(--purple-primary)" }}>{s.num}</span>
-              <h3 className="text-[14px] font-medium mb-2" style={{ color: "var(--text-primary)", fontFamily: "var(--font-jetbrains), monospace" }}>{s.title}</h3>
-              <p className="text-[12px] leading-relaxed" style={{ color: "var(--text-secondary)", fontFamily: "var(--font-jetbrains), monospace" }}>{s.body}</p>
-            </div>
-            {i < STEPS.length - 1 && (
-              <span className="hidden md:block text-[16px]" style={{ color: "var(--text-muted)" }}>→</span>
-            )}
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-/* ── Agent Preview Strip ───────────────────────────────────── */
-const PREVIEW_AGENTS = [
-  "chainlink-price-oracle", "lido-staker", "uniswap-pool-quoter", "ens-name-resolver",
-  "venice-private-reasoner", "monad-balance-checker", "snapshot-dao-voter", "bankr-agent-wallet",
-  "metamask-delegation", "monad-gas-estimator",
-];
-
-function AgentPreview() {
-  const agents = PREVIEW_AGENTS.map((id) => AGENT_REGISTRY.find((a) => a.id === id)).filter(Boolean);
-
-  return (
-    <section className="flex flex-col items-center px-6 mt-24">
-      <p className="text-[11px] tracking-[3px] mb-10 text-center" style={{ color: "var(--text-muted)", fontFamily: "var(--font-jetbrains), monospace" }}>
-        {"//"} 48 AGENTS. 23 PROTOCOLS. 0 MOCK RESPONSES.
-      </p>
-      <div className="flex gap-3 overflow-x-auto pb-4 max-w-full w-full px-2" style={{ scrollbarWidth: "none" }}>
-        {agents.map((agent) => {
-          if (!agent) return null;
-          const catColor = CATEGORY_COLORS[agent.category] ?? "var(--purple-primary)";
-          const isLive = agent.status === "live";
-
-          return (
             <div
-              key={agent.id}
-              className="flex-shrink-0 p-3 px-4 rounded-md min-w-[190px]"
-              style={{ background: "var(--bg-surface)", border: "1px solid var(--purple-border)" }}
+              className="icon-badge"
+              style={{ margin: "0 auto 20px" }}
             >
-              <span className="text-[10px] tracking-[2px] block mb-1.5" style={{ color: catColor, fontFamily: "var(--font-jetbrains), monospace" }}>
-                {agent.category.toUpperCase()}
-              </span>
-              <span className="text-[13px] font-medium block mb-1.5" style={{ color: "var(--text-primary)", fontFamily: "var(--font-jetbrains), monospace" }}>
-                {agent.name}
-              </span>
-              <div className="flex items-center gap-2">
-                <span className="w-[6px] h-[6px] rounded-full inline-block" style={{ background: isLive ? "var(--green-live)" : "var(--amber-stub)" }} />
-                <span className="text-[11px]" style={{ color: "var(--text-muted)", fontFamily: "var(--font-jetbrains), monospace" }}>
-                  {agent.sponsor}
-                </span>
-              </div>
+              {step.icon}
             </div>
-          );
-        })}
+            <h3 style={{ fontSize: 18, fontWeight: 600, color: "var(--text-primary)", marginBottom: 10 }}>
+              {step.title}
+            </h3>
+            <p style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.6 }}>
+              {step.body}
+            </p>
+          </div>
+        ))}
       </div>
     </section>
   );
 }
 
-/* ── CTA ───────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   PRICING — "Affordable Plans for Every Need"
+   ═══════════════════════════════════════════════════════════════ */
+const PLANS = [
+  {
+    tier: "FREE",
+    price: "$0",
+    period: "/m",
+    name: "Free Forever",
+    features: [
+      "Basic AI-generated designs",
+      "Access to standard templates",
+      "Standard template library",
+      "5 exports per month",
+    ],
+    highlighted: false,
+    cta: "Get Started",
+  },
+  {
+    tier: "PRO",
+    price: "$14.99",
+    period: "/m",
+    name: "Most Popular",
+    features: [
+      "Advanced AI-generated designs",
+      "Full access to premium tools",
+      "Premium template library",
+      "Unlimited exports",
+      "Real-time collaboration",
+      "Priority email support",
+    ],
+    highlighted: true,
+    cta: "Get Started",
+  },
+  {
+    tier: "PRO",
+    price: "$29.99",
+    period: "/m",
+    name: "Billed Monthly",
+    features: [
+      "All features included in Pro Plan",
+      "Dedicated account manager",
+      "Custom AI-tailored designs",
+      "Onboarding and training sessions",
+      "24/7 Priority support",
+      "Advanced analytics & reporting",
+      "Secure cloud storage",
+    ],
+    highlighted: false,
+    cta: "Get Started",
+  },
+];
+
+function Pricing() {
+  const [isYearly, setIsYearly] = useState(false);
+
+  return (
+    <section id="pricing" className="section" style={{ textAlign: "center" }}>
+      <h2
+        className="font-heading"
+        style={{
+          fontSize: 42,
+          color: "var(--text-primary)",
+          marginBottom: 16,
+        }}
+      >
+        Affordable Plans for{" "}
+        <span className="text-accent" style={{ display: "block" }}>
+          Every Need
+        </span>
+      </h2>
+      <p
+        style={{
+          fontSize: 15,
+          color: "var(--text-secondary)",
+          maxWidth: 560,
+          margin: "0 auto 32px",
+          lineHeight: 1.7,
+        }}
+      >
+        Choose the perfect plan for your agent projects, from startups to enterprises. Our pricing tiers are designed to offer flexibility and value.
+      </p>
+
+      {/* Toggle */}
+      <div style={{ display: "flex", justifyContent: "center", marginBottom: 48 }}>
+        <div className="toggle-switch">
+          <button
+            className={`toggle-option ${!isYearly ? "active" : ""}`}
+            onClick={() => setIsYearly(false)}
+          >
+            Monthly
+          </button>
+          <button
+            className={`toggle-option ${isYearly ? "active" : ""}`}
+            onClick={() => setIsYearly(true)}
+          >
+            Yearly
+          </button>
+        </div>
+      </div>
+
+      {/* Cards */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: 24,
+          maxWidth: 1000,
+          margin: "0 auto",
+          alignItems: "stretch",
+        }}
+      >
+        {PLANS.map((plan, i) => (
+          <div
+            key={i}
+            className={plan.highlighted ? "card-highlighted" : "card"}
+            style={{
+              padding: "36px 28px",
+              textAlign: "left",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <span
+              style={{
+                fontSize: 11,
+                letterSpacing: "2px",
+                color: plan.highlighted ? "rgba(255,255,255,0.7)" : "var(--text-muted)",
+                marginBottom: 16,
+                textTransform: "uppercase",
+              }}
+            >
+              {plan.tier}
+            </span>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 4 }}>
+              <span
+                style={{
+                  fontSize: 42,
+                  fontWeight: 700,
+                  color: plan.highlighted ? "#fff" : "var(--text-primary)",
+                  fontFamily: "var(--font-body), sans-serif",
+                }}
+              >
+                {plan.price}
+              </span>
+              <span
+                style={{
+                  fontSize: 16,
+                  color: plan.highlighted ? "rgba(255,255,255,0.6)" : "var(--text-muted)",
+                }}
+              >
+                {plan.period}
+              </span>
+            </div>
+            <p
+              style={{
+                fontSize: 13,
+                color: plan.highlighted ? "rgba(255,255,255,0.6)" : "var(--text-muted)",
+                marginBottom: 24,
+              }}
+            >
+              {plan.name}
+            </p>
+
+            <hr
+              style={{
+                border: "none",
+                borderTop: `1px solid ${plan.highlighted ? "rgba(255,255,255,0.2)" : "var(--border-subtle)"}`,
+                marginBottom: 20,
+              }}
+            />
+
+            <ul
+              style={{
+                listStyle: "none",
+                padding: 0,
+                margin: 0,
+                flex: 1,
+              }}
+            >
+              {plan.features.map((feature) => (
+                <li
+                  key={feature}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    fontSize: 13,
+                    color: plan.highlighted ? "rgba(255,255,255,0.85)" : "var(--text-secondary)",
+                    marginBottom: 12,
+                    lineHeight: 1.5,
+                  }}
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke={plan.highlighted ? "#fff" : "var(--purple-primary)"}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M9 12l2 2 4-4" />
+                  </svg>
+                  {feature}
+                </li>
+              ))}
+            </ul>
+
+            <button
+              style={{
+                marginTop: 24,
+                width: "100%",
+                padding: "12px 0",
+                borderRadius: "var(--radius-full)",
+                fontSize: 14,
+                fontWeight: 500,
+                cursor: "pointer",
+                transition: "all 0.2s",
+                border: plan.highlighted ? "1px solid rgba(255,255,255,0.3)" : "1px solid var(--border-subtle)",
+                background: plan.highlighted ? "rgba(255,255,255,0.15)" : "transparent",
+                color: plan.highlighted ? "#fff" : "var(--text-secondary)",
+                fontFamily: "var(--font-body), sans-serif",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = plan.highlighted ? "#fff" : "var(--purple-primary)";
+                e.currentTarget.style.color = plan.highlighted ? "#fff" : "var(--text-primary)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = plan.highlighted
+                  ? "rgba(255,255,255,0.3)"
+                  : "var(--border-subtle)";
+                e.currentTarget.style.color = plan.highlighted ? "#fff" : "var(--text-secondary)";
+              }}
+            >
+              {plan.cta}
+            </button>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INSIGHTS
+   ═══════════════════════════════════════════════════════════════ */
+const ARTICLES = [
+  {
+    img: "/images/blog-1.png",
+    date: "Apr 8, 2025",
+    readTime: "4 min read",
+    title: "Building Multi-Agent Pipelines for DeFi",
+  },
+  {
+    img: "/images/blog-2.png",
+    date: "Mar 15, 2025",
+    readTime: "5 min read",
+    title: "How Parallel Execution Changes Agent Orchestration",
+  },
+  {
+    img: "/images/blog-3.png",
+    date: "Feb 28, 2025",
+    readTime: "7 min read",
+    title: "Why Monad-Native Agents Outperform the Rest",
+  },
+];
+
+function Insights() {
+  return (
+    <section id="insights" className="section" style={{ textAlign: "center" }}>
+      <h2
+        className="font-heading"
+        style={{
+          fontSize: 42,
+          color: "var(--text-primary)",
+          marginBottom: 16,
+        }}
+      >
+        Stay Inspired with Our<br />
+        Latest <span className="text-accent">Insights</span>
+      </h2>
+      <p
+        style={{
+          fontSize: 15,
+          color: "var(--text-secondary)",
+          maxWidth: 560,
+          margin: "0 auto 48px",
+          lineHeight: 1.7,
+        }}
+      >
+        Dive into our blog for the latest trends, tips, and insights in the world of agent orchestration and Web3. Our articles are crafted to keep you informed and inspired.
+      </p>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: 24,
+          maxWidth: 960,
+          margin: "0 auto 40px",
+        }}
+      >
+        {ARTICLES.map((article) => (
+          <div
+            key={article.title}
+            className="card"
+            style={{ overflow: "hidden", textAlign: "left", cursor: "pointer" }}
+          >
+            <div style={{ position: "relative", width: "100%", height: 200 }}>
+              <Image
+                src={article.img}
+                alt={article.title}
+                fill
+                style={{ objectFit: "cover" }}
+              />
+            </div>
+            <div style={{ padding: "20px 20px 24px" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontSize: 12,
+                  color: "var(--text-muted)",
+                  marginBottom: 10,
+                }}
+              >
+                <span>{article.date}</span>
+                <span>{article.readTime}</span>
+              </div>
+              <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--text-primary)", lineHeight: 1.4, margin: 0 }}>
+                {article.title}
+              </h3>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <a href="#" className="btn-primary" style={{ fontSize: 13, padding: "10px 28px" }}>
+        Read More
+      </a>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CTA — "Start Your Agent Journey Today"
+   ═══════════════════════════════════════════════════════════════ */
 function CTA() {
   return (
-    <section className="flex flex-col items-center text-center px-6 py-16 mt-24" style={{ background: "var(--bg-surface)", borderTop: "1px solid #836EF918", borderBottom: "1px solid #836EF918" }}>
-      <h2 className="font-heading text-[22px] mb-5" style={{ color: "var(--purple-primary)" }}>SHIP YOUR PIPELINE</h2>
-      <p className="text-[14px] leading-relaxed max-w-[420px] mb-8" style={{ color: "var(--text-secondary)", fontFamily: "var(--font-jetbrains), monospace" }}>
-        Everything you need to orchestrate Web3 agents. No backend. No infrastructure. No glue code.
-      </p>
-      <div className="flex items-center gap-3">
-        <Link href="/app" className="inline-flex items-center gap-2 px-6 py-3 rounded-md text-[13px] font-medium transition-colors" style={{ background: "var(--purple-primary)", color: "var(--bg-base)", fontFamily: "var(--font-jetbrains), monospace" }} onMouseEnter={e => (e.currentTarget.style.background = "#9d88fb")} onMouseLeave={e => (e.currentTarget.style.background = "var(--purple-primary)")}>
-          Launch App →
-        </Link>
-        <a href="#" className="inline-flex items-center gap-2 px-6 py-3 rounded-md text-[13px] font-medium transition-colors" style={{ background: "transparent", color: "var(--text-secondary)", border: "1px solid var(--purple-border)", fontFamily: "var(--font-jetbrains), monospace" }} onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--purple-primary)"; e.currentTarget.style.color = "var(--text-primary)"; }} onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--purple-border)"; e.currentTarget.style.color = "var(--text-secondary)"; }}>
-          Read the Docs
-        </a>
+    <section
+      style={{
+        background: "var(--bg-surface)",
+        borderTop: "1px solid var(--border-subtle)",
+      }}
+    >
+      <div
+        style={{
+          maxWidth: 1200,
+          margin: "0 auto",
+          padding: "80px 40px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 48,
+        }}
+      >
+        <div style={{ flex: 1, maxWidth: 520 }}>
+          <h2
+            className="font-heading"
+            style={{ fontSize: 42, color: "var(--text-primary)", marginBottom: 16 }}
+          >
+            Start Your Agent<br />
+            <span className="text-accent">Journey</span> Today
+          </h2>
+          <p
+            style={{
+              fontSize: 15,
+              lineHeight: 1.7,
+              color: "var(--text-secondary)",
+              marginBottom: 32,
+              maxWidth: 420,
+            }}
+          >
+            Sign up now and experience the power of AI-driven agent orchestration without any commitment.
+          </p>
+          <Link href="/app" className="btn-primary">
+            Get Started
+          </Link>
+        </div>
+        <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+          <div
+            style={{
+              width: 400,
+              height: 300,
+              borderRadius: "var(--radius-xl)",
+              overflow: "hidden",
+              position: "relative",
+            }}
+          >
+            <Image
+              src="/images/cta-render.png"
+              alt="Abstract 3D visualization"
+              fill
+              style={{ objectFit: "cover" }}
+            />
+          </div>
+        </div>
       </div>
-      <p className="text-[11px] mt-6" style={{ color: "var(--text-muted)", fontFamily: "var(--font-jetbrains), monospace" }}>
-        MIT License · Built for Monad Blitz Hackathon · Monad Testnet
-      </p>
     </section>
   );
 }
 
-/* ── Footer ────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════════════════════════ */
 function Footer() {
   return (
-    <footer className="flex items-center justify-between px-6 py-5" style={{ borderTop: "1px solid #836EF918" }}>
-      <span className="text-[13px] font-medium" style={{ color: "var(--purple-primary)", fontFamily: "var(--font-jetbrains), monospace" }}>FLOWMON</span>
-      <div className="flex items-center gap-4">
+    <footer
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "20px 40px",
+        borderTop: "1px solid var(--border-subtle)",
+        fontSize: 13,
+      }}
+    >
+      <span className="font-heading" style={{ color: "var(--text-primary)", fontSize: 16 }}>
+        FlowMon
+      </span>
+      <div style={{ display: "flex", gap: 24 }}>
         {["MIT License", "Browse Agents", "GitHub", "Contribute"].map((link) => (
           <a
             key={link}
             href="#"
-            className="text-[12px] transition-colors"
-            style={{ color: "var(--text-muted)", fontFamily: "var(--font-jetbrains), monospace" }}
-            onMouseEnter={e => (e.currentTarget.style.color = "var(--purple-primary)")}
-            onMouseLeave={e => (e.currentTarget.style.color = "var(--text-muted)")}
+            style={{ color: "var(--text-muted)", textDecoration: "none", transition: "color 0.2s" }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--purple-primary)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
           >
             {link}
           </a>
         ))}
       </div>
-      <span className="text-[11px] hidden md:block" style={{ color: "var(--text-muted)", fontFamily: "var(--font-jetbrains), monospace" }}>Anonymous download tracking</span>
+      <span style={{ color: "var(--text-muted)", fontSize: 12 }}>
+        Built for Monad · Blitz Hackathon
+      </span>
     </footer>
   );
 }
 
-/* ── Page ──────────────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   PAGE
+   ═══════════════════════════════════════════════════════════════ */
 export default function HomePage() {
   return (
     <div style={{ background: "var(--bg-base)", minHeight: "100vh" }}>
       <Navbar />
       <Hero />
-      <CommandStrip />
-      <WorksWith />
-      <FeatureGrid />
-      <HowItWorks />
-      <AgentPreview />
+      <LogoStrip />
+      <Features />
+      <hr className="section-divider" />
+      <Pricing />
+      <hr className="section-divider" />
+      <Insights />
       <CTA />
       <Footer />
     </div>

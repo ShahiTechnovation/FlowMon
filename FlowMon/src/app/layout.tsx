@@ -1,17 +1,23 @@
 import type { Metadata } from "next";
-import { Press_Start_2P, JetBrains_Mono } from "next/font/google";
+import { DM_Serif_Display, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const pressStart = Press_Start_2P({
+const dmSerif = DM_Serif_Display({
   weight: "400",
   subsets: ["latin"],
-  variable: "--font-press-start",
+  variable: "--font-heading",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-body",
   display: "swap",
 });
 
 const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-jetbrains",
+  variable: "--font-code",
   display: "swap",
 });
 
@@ -41,7 +47,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${pressStart.variable} ${jetbrains.variable} antialiased`}>
+      <body className={`${dmSerif.variable} ${inter.variable} ${jetbrains.variable} antialiased`}>
         {children}
       </body>
     </html>
