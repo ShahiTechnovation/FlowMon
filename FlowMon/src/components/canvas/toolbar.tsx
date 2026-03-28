@@ -1,6 +1,6 @@
 "use client";
 
-import { Play, Square, Download, Upload, Trash2, LayoutTemplate, Save, Bot, Zap, Activity } from "lucide-react";
+import Image from "next/image";import { Play, Square, Download, Upload, Trash2, LayoutTemplate, Save, Bot, Zap, Activity } from "lucide-react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useFlowStore } from "@/store/flow-store";
 import { useActivityStore } from "@/store/activity-store";
@@ -40,9 +40,7 @@ export default function Toolbar() {
     <div className="h-12 flex items-center px-4 gap-2 flex-shrink-0" style={{ background: "var(--bg-surface)", borderBottom: "1px solid #836EF918", fontFamily: "var(--font-jetbrains), monospace" }}>
       {/* Brand */}
       <div className="flex items-center gap-2 mr-3">
-        <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ background: "var(--purple-primary)" }}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
-        </div>
+        <Image src="/images/logo.png" alt="FlowMon Logo" width={24} height={24} className="rounded-md" />
         <span className="font-heading text-[10px]" style={{ color: "var(--purple-primary)" }}>FLOWMON</span>
       </div>
       <div className="w-px h-5" style={{ background: "var(--purple-border)" }} />

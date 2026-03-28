@@ -25,21 +25,7 @@ function Navbar() {
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-        <div
-          style={{
-            width: 32,
-            height: 32,
-            borderRadius: 8,
-            background: "var(--purple-primary)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round">
-            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-          </svg>
-        </div>
+        <Image src="/images/logo.png" alt="FlowMon Logo" width={32} height={32} style={{ borderRadius: 8 }} />
         <span className="font-heading" style={{ fontSize: 20, color: "var(--text-primary)", letterSpacing: "0.5px" }}>
           FlowMon
         </span>
@@ -723,9 +709,12 @@ function Footer() {
         fontSize: 13,
       }}
     >
-      <span className="font-heading" style={{ color: "var(--text-primary)", fontSize: 16 }}>
-        FlowMon
-      </span>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <Image src="/images/logo.png" alt="FlowMon Logo" width={24} height={24} style={{ borderRadius: 4 }} />
+        <span className="font-heading" style={{ color: "var(--text-primary)", fontSize: 16 }}>
+          FlowMon
+        </span>
+      </div>
       <div style={{ display: "flex", gap: 24 }}>
         {["MIT License", "Browse Agents", "GitHub", "Contribute"].map((link) => (
           <a
