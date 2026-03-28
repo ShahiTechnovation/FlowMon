@@ -29,6 +29,7 @@ export interface FlowStore {
   selectedNodeId: string | null;
   inspectorOpen: boolean;
   isAgentXOpen: boolean;
+  isChatOpen: boolean;
   abortController: AbortController | null;
 
   // ── Wallet connection ─────────────────────────────────────
@@ -64,6 +65,7 @@ export interface FlowStore {
   selectNode: (nodeId: string | null) => void;
   setInspectorOpen: (open: boolean) => void;
   setAgentXOpen: (open: boolean) => void;
+  setChatOpen: (open: boolean) => void;
   loadDemoFlow: () => void;
   exportFlow: () => void;
   importFlow: (json: string) => void;
@@ -176,6 +178,7 @@ export const useFlowStore = create<FlowStore>((set, get) => ({
   selectedNodeId: null,
   inspectorOpen: false,
   isAgentXOpen: false,
+  isChatOpen: false,
   abortController: null,
   connectedAddress: null,
   pipelineTriggerOpen: false,
@@ -488,6 +491,7 @@ export const useFlowStore = create<FlowStore>((set, get) => ({
   selectNode: (nodeId) => set({ selectedNodeId: nodeId, inspectorOpen: nodeId !== null }),
   setInspectorOpen: (open) => set({ inspectorOpen: open }),
   setAgentXOpen: (open) => set({ isAgentXOpen: open }),
+  setChatOpen: (open) => set({ isChatOpen: open }),
 
   // ── Negotiation ───────────────────────────────────────────
   runNegotiation: async (nodeAId, nodeBId) => {

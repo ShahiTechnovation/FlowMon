@@ -130,6 +130,9 @@ export async function POST(
           chainId: 10143,
           gasStrategy: body.gasStrategy || "auto",
           status: "tx_ready",
+          to: "0x0000000000000000000000000000000000000000",
+          calldata: "0x",
+          value: "0",
           note: "Transaction routed to Monad Testnet. Connect wallet to sign.",
           explorerUrl: "https://testnet.monadexplorer.com",
           flowId,
@@ -143,10 +146,12 @@ export async function POST(
           action: "transfer_prepared",
           chain: "Monad Testnet",
           chainId: 10143,
-          to: body.to || "",
+          to: body.to || "0x0000000000000000000000000000000000000000",
           amount: body.amount || "0",
           token: body.token || "MON",
           status: "tx_ready",
+          calldata: "0x",
+          value: "0",
           note: "Transfer calldata ready. Connect wallet to submit on Monad.",
           flowId,
           step,
@@ -264,8 +269,11 @@ export async function POST(
           tokenOut: body.tokenOut || "USDC",
           amountIn: body.amountIn || "0.0001",
           slippageTolerance: parseFloat(body.slippageTolerance || "0.5"),
-          chainId: body.chainId || "8453",
+          chainId: body.chainId || "10143",
           status: "tx_ready",
+          to: "0x0000000000000000000000000000000000000000",
+          calldata: "0x",
+          value: "0",
           note: "Swap calldata constructed. Connect wallet to submit on-chain.",
           flowId,
           step,
@@ -339,6 +347,9 @@ export async function POST(
           lidoContract: "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
           apr: apr ? `${apr.toFixed(2)}%` : "unknown",
           status: "tx_ready",
+          to: "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84",
+          calldata: "0x",
+          value: "0",
           note: "Lido stake calldata ready. Connect wallet to submit.",
           flowId,
           step,
@@ -524,22 +535,6 @@ export async function POST(
         }, startTime, "stub");
       }
 
-      // ── Chain ──────────────────────────────────────────────
-      case "base-transaction-executor": {
-        return ampResponse(agentId, {
-          agentId,
-          action: "tx_routing",
-          chain: "Base",
-          chainId: 8453,
-          gasStrategy: body.gasLimitStrategy || "auto",
-          status: "tx_ready",
-          note: "Transaction routed to Base L2. Connect wallet to submit.",
-          explorerUrl: "https://basescan.org",
-          flowId,
-          step,
-        }, startTime);
-      }
-
       // ── Governance ─────────────────────────────────────────
       case "snapshot-dao-voter": {
         try {
@@ -622,7 +617,7 @@ export async function POST(
             agentId,
             action: "wallet_info",
             wallets: data,
-            network: body.network || "base",
+            network: body.network || "monad",
             status: "success",
             flowId,
             step,

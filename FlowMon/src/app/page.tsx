@@ -172,7 +172,7 @@ function Hero() {
 /* ═══════════════════════════════════════════════════════════════
    LOGO STRIP
    ═══════════════════════════════════════════════════════════════ */
-const PROTOCOLS = ["Monad", "Uniswap", "Lido", "Chainlink", "ENS", "MetaMask", "Venice.ai", "Base", "Bankr"];
+const PROTOCOLS = ["Monad", "Uniswap", "Lido", "Chainlink", "ENS", "MetaMask", "Venice.ai", "Bankr"];
 
 function LogoStrip() {
   return (

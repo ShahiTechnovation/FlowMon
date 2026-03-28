@@ -4,12 +4,11 @@
 // FlowMon — TransactionSignButton
 // Sign, submit & track on-chain transactions.
 // Full lifecycle: preparing → awaiting_signature → pending → confirmed/failed
-// Monad-native with Base fallback.
+// Monad-native.
 // ============================================================
 
 import { useState, useCallback } from "react";
 import { useSendTransaction, useWaitForTransactionReceipt, useAccount, useSwitchChain } from "wagmi";
-import { base } from "wagmi/chains";
 import { monadTestnet } from "@/lib/monad";
 import {
   Send, CheckCircle2, AlertCircle, ExternalLink, Loader2,
@@ -55,10 +54,10 @@ export default function TransactionSignButton({
 
   const targetChainId = transaction.chainId || monadTestnet.id;
   const needsChainSwitch = currentChainId !== targetChainId;
-  const chainName = targetChainId === monadTestnet.id ? "Monad Testnet" : targetChainId === base.id ? "Base" : `Chain ${targetChainId}`;
+  const chainName = targetChainId === monadTestnet.id ? "Monad Testnet" : `Chain ${targetChainId}`;
   const explorerBase = targetChainId === monadTestnet.id
     ? "https://testnet.monadexplorer.com"
-    : "https://basescan.org";
+    : `https://explorer.chain${targetChainId}.org`;
 
   const { data: receipt, isLoading: isConfirming } = useWaitForTransactionReceipt({
     hash: txHash ?? undefined,

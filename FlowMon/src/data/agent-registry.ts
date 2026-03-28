@@ -128,7 +128,7 @@ export const AGENT_REGISTRY: AgentDefinition[] = [
   {
     id: "uniswap-swap-v4",
     name: "Uniswap Swap",
-    description: "Builds a token swap calldata using Uniswap v4 hooks on Base.",
+    description: "Builds a token swap calldata using Uniswap v4 hooks on Monad.",
     category: "defi",
     sponsor: "Uniswap",
     version: "4.0.0",
@@ -136,10 +136,10 @@ export const AGENT_REGISTRY: AgentDefinition[] = [
     status: "live",
     endpointUrl: "/api/agents/uniswap-swap-v4",
     parameters: [
-      { name: "tokenIn", label: "Token In", type: "text", defaultValue: "WETH", required: true, description: "Input token symbol" },
+      { name: "tokenIn", label: "Token In", type: "text", defaultValue: "WMON", required: true, description: "Input token symbol" },
       { name: "tokenOut", label: "Token Out", type: "text", defaultValue: "USDC", required: true, description: "Output token symbol" },
       { name: "slippageTolerance", label: "Slippage (%)", type: "number", defaultValue: "0.5", required: false, description: "Max allowed slippage" },
-      { name: "chainId", label: "Chain ID", type: "text", defaultValue: "8453", required: true, description: "Base: 8453, Ethereum: 1" },
+      { name: "chainId", label: "Chain ID", type: "text", defaultValue: "10143", required: true, description: "Monad Testnet: 10143, Ethereum: 1" },
     ],
     tags: ["swap", "defi", "uniswap"],
   },
@@ -550,23 +550,6 @@ export const AGENT_REGISTRY: AgentDefinition[] = [
     tags: ["arkhai", "attestation"],
   },
 
-  // ── Chain ─────────────────────────────────────────────────
-  {
-    id: "base-transaction-executor",
-    name: "Base TX Executor",
-    description: "Routes a prepared transaction to Base L2.",
-    category: "chain",
-    sponsor: "Base",
-    version: "1.0.0",
-    iconKey: "PlugZap",
-    status: "live",
-    endpointUrl: "/api/agents/base-transaction-executor",
-    parameters: [
-      { name: "gasLimitStrategy", label: "Gas Strategy", type: "select", options: ["auto", "fast", "standard", "slow"], defaultValue: "auto", required: true, description: "Gas strategy" },
-    ],
-    tags: ["base", "transaction", "chain"],
-  },
-
   // ── Governance ────────────────────────────────────────────
   {
     id: "snapshot-dao-voter",
@@ -674,7 +657,7 @@ export const AGENT_REGISTRY: AgentDefinition[] = [
     status: "stub",
     endpointUrl: "/api/agents/moonpay-openwallet",
     parameters: [
-      { name: "chains", label: "Chains", type: "text", defaultValue: "ethereum,base", required: true, description: "Networks to enable" },
+      { name: "chains", label: "Chains", type: "text", defaultValue: "ethereum,monad", required: true, description: "Networks to enable" },
     ],
     tags: ["moonpay", "wallet"],
   },
@@ -690,7 +673,7 @@ export const AGENT_REGISTRY: AgentDefinition[] = [
     endpointUrl: "/api/agents/bankr-agent-wallet",
     parameters: [
       { name: "agentId", label: "Agent ID", type: "text", defaultValue: "flowmon-demo", required: true, description: "Agent identifier" },
-      { name: "network", label: "Network", type: "select", options: ["base", "ethereum", "polygon", "solana"], defaultValue: "base", required: true, description: "Chain" },
+      { name: "network", label: "Network", type: "select", options: ["monad", "ethereum", "polygon", "solana"], defaultValue: "monad", required: true, description: "Chain" },
     ],
     tags: ["bankr", "wallet"],
   },
