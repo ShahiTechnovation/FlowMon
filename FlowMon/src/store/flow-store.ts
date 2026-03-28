@@ -10,6 +10,7 @@ import type {
   ExecutionLogEntry,
   FlowExecutionStatus,
   AgentDefinition,
+  NegotiationSession,
 } from "@/types";
 import { AGENT_REGISTRY } from "@/data/agent-registry";
 import { buildExecutionPlan, getUpstreamNodeIds } from "@/lib/execution-engine";
@@ -30,6 +31,24 @@ export interface FlowStore {
   isAgentXOpen: boolean;
   abortController: AbortController | null;
 
+  // ── Wallet connection ─────────────────────────────────────
+  connectedAddress: string | null;
+  setConnectedAddress: (addr: string | null) => void;
+
+  // ── Pipeline trigger modal ────────────────────────────────
+  pipelineTriggerOpen: boolean;
+  setPipelineTriggerOpen: (open: boolean) => void;
+
+  // ── Publish modal ─────────────────────────────────────────
+  isPublishModalOpen: boolean;
+  setPublishModalOpen: (open: boolean) => void;
+
+  // ── Negotiation ───────────────────────────────────────────
+  negotiationSession: NegotiationSession | null;
+  isNegotiating: boolean;
+  runNegotiation: (nodeAId: string, nodeBId: string) => Promise<void>;
+  clearNegotiation: () => void;
+
   onNodesChange: (changes: Parameters<typeof applyNodeChanges>[0]) => void;
   onEdgesChange: (changes: Parameters<typeof applyEdgeChanges>[0]) => void;
   onConnect: (connection: Parameters<typeof addEdge>[0]) => void;
@@ -37,7 +56,7 @@ export interface FlowStore {
   updateNodeParameter: (nodeId: string, paramName: string, value: string) => void;
   removeNode: (nodeId: string) => void;
   setFlowName: (name: string) => void;
-  runFlow: () => Promise<void>;
+  runFlow: (opts?: { globalParams?: Record<string, string> }) => Promise<void>;
   stopFlow: () => void;
   retryNode: (nodeId: string) => Promise<void>;
   clearLog: () => void;
@@ -158,6 +177,15 @@ export const useFlowStore = create<FlowStore>((set, get) => ({
   inspectorOpen: false,
   isAgentXOpen: false,
   abortController: null,
+  connectedAddress: null,
+  pipelineTriggerOpen: false,
+  isPublishModalOpen: false,
+  negotiationSession: null,
+  isNegotiating: false,
+
+  setConnectedAddress: (addr) => set({ connectedAddress: addr }),
+  setPipelineTriggerOpen: (open) => set({ pipelineTriggerOpen: open }),
+  setPublishModalOpen: (open) => set({ isPublishModalOpen: open }),
 
   onNodesChange: (changes) => {
     set((state) => ({ nodes: applyNodeChanges(changes, state.nodes) as Node<CanvasNodeData>[] }));
@@ -222,7 +250,7 @@ export const useFlowStore = create<FlowStore>((set, get) => ({
   setFlowName: (name) => set({ flowName: name }),
 
   // ── Parallel Execution Engine ──────────────────────────────
-  runFlow: async () => {
+  runFlow: async (opts?: { globalParams?: Record<string, string> }) => {
     const state = get();
     if (state.flowStatus === "running") return;
     if (state.nodes.length === 0) {
@@ -233,11 +261,13 @@ export const useFlowStore = create<FlowStore>((set, get) => ({
 
     const controller = new AbortController();
     const flowId = state.flowId;
+    const globalParams = opts?.globalParams ?? {};
 
     set({
       flowStatus: "running",
       isLogVisible: true,
       abortController: controller,
+      pipelineTriggerOpen: false,
       executionLog: addLog(state, "info", "System", `Starting flow "${state.flowName}" — ${state.nodes.length} agents`),
     });
 
@@ -288,6 +318,12 @@ export const useFlowStore = create<FlowStore>((set, get) => ({
           const { agentId, agentName, parameterValues } = node.data;
           const agentDef = AGENT_REGISTRY.find((a) => a.id === agentId);
 
+          // Merge: globalParams first, then node-specific params win
+          const mergedParams: Record<string, string> = {
+            ...globalParams,
+            ...parameterValues,
+          };
+
           // Collect upstream outputs
           const upstreamIds = getUpstreamNodeIds(nodeId, currentState.edges);
           const upstreamResult: Record<string, unknown> = {};
@@ -315,7 +351,7 @@ export const useFlowStore = create<FlowStore>((set, get) => ({
               body: JSON.stringify({
                 agentId,
                 agentName,
-                parameterValues,
+                parameterValues: mergedParams,
                 upstreamResult: Object.keys(upstreamResult).length > 0 ? upstreamResult : undefined,
                 endpointUrl: agentDef?.endpointUrl,
                 flowId,
@@ -452,6 +488,82 @@ export const useFlowStore = create<FlowStore>((set, get) => ({
   selectNode: (nodeId) => set({ selectedNodeId: nodeId, inspectorOpen: nodeId !== null }),
   setInspectorOpen: (open) => set({ inspectorOpen: open }),
   setAgentXOpen: (open) => set({ isAgentXOpen: open }),
+
+  // ── Negotiation ───────────────────────────────────────────
+  runNegotiation: async (nodeAId, nodeBId) => {
+    const state = get();
+    const nodeA = state.nodes.find((n) => n.id === nodeAId);
+    const nodeB = state.nodes.find((n) => n.id === nodeBId);
+    if (!nodeA || !nodeB) return;
+
+    set({ isNegotiating: true, isLogVisible: true });
+    set((s) => ({
+      executionLog: addLog(s, "info", "Negotiation", `Starting negotiation between ${nodeA.data.agentName} and ${nodeB.data.agentName}`),
+    }));
+
+    try {
+      const response = await fetch("/api/negotiate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          initiatorAgentId: nodeA.data.agentId,
+          initiatorAgentName: nodeA.data.agentName,
+          receiverAgentId: nodeB.data.agentId,
+          receiverAgentName: nodeB.data.agentName,
+          initiatorParams: nodeA.data.parameterValues,
+          receiverParams: nodeB.data.parameterValues,
+          negotiationGoal: "Optimize inter-agent parameter handoff for maximum flow efficiency",
+          conversationHistory: [],
+        }),
+      });
+
+      const result = await response.json();
+
+      const session: NegotiationSession = {
+        sessionId: generateId("neg"),
+        participants: [nodeA.data.agentId, nodeB.data.agentId],
+        messages: [
+          {
+            role: "user",
+            agentId: nodeA.data.agentId,
+            agentName: nodeA.data.agentName,
+            content: result.agentAMessage || "Initiating negotiation.",
+            timestamp: new Date(),
+          },
+          {
+            role: "assistant",
+            agentId: nodeB.data.agentId,
+            agentName: nodeB.data.agentName,
+            content: result.agentBMessage || "Acknowledged.",
+            timestamp: new Date(),
+          },
+        ],
+        status: result.agreed ? "resolved" : "active",
+        resolution: result.summary,
+      };
+
+      set((s) => ({
+        negotiationSession: session,
+        isNegotiating: false,
+        executionLog: addLog(
+          s,
+          result.agreed ? "success" : "warn",
+          "Negotiation",
+          result.agreed
+            ? `Agreement reached (confidence: ${Math.round((result.confidence || 0) * 100)}%): ${result.summary}`
+            : `Negotiation ongoing: ${result.summary}`
+        ),
+      }));
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Negotiation failed";
+      set((s) => ({
+        isNegotiating: false,
+        executionLog: addLog(s, "error", "Negotiation", errorMessage),
+      }));
+    }
+  },
+
+  clearNegotiation: () => set({ negotiationSession: null }),
 
   loadDemoFlow: () => {
     set({

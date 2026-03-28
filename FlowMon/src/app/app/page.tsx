@@ -9,11 +9,15 @@ import Toolbar from "@/components/canvas/toolbar";
 import ExecutionLog from "@/components/canvas/execution-log";
 import AgentXPanel from "@/components/agent-x/agent-x-panel";
 import PipelineSaveModal from "@/components/ui/pipeline-save-modal";
+import ActivityPanel from "@/components/canvas/activity-panel";
+import PipelineTriggerModal from "@/components/canvas/pipeline-trigger-modal";
+import WalletSyncProvider from "@/providers/wallet-sync-provider";
 
 export default function CanvasPage() {
   return (
     <Providers>
       <ReactFlowProvider>
+        <WalletSyncProvider />
         <div className="flex h-screen w-screen flex-col overflow-hidden" style={{ background: "var(--bg-base)" }}>
           <Toolbar />
           <div className="flex flex-1 overflow-hidden">
@@ -25,9 +29,11 @@ export default function CanvasPage() {
               <ExecutionLog />
             </main>
             <InspectorPanel />
+            <ActivityPanel />
           </div>
           <AgentXPanel />
           <PipelineSaveModal />
+          <PipelineTriggerModal />
         </div>
       </ReactFlowProvider>
     </Providers>

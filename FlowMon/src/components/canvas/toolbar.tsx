@@ -1,24 +1,36 @@
 "use client";
 
-import { Play, Square, Download, Upload, Trash2, LayoutTemplate, Save, Bot } from "lucide-react";
+import { Play, Square, Download, Upload, Trash2, LayoutTemplate, Save, Bot, Zap, Activity } from "lucide-react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useFlowStore } from "@/store/flow-store";
+import { useActivityStore } from "@/store/activity-store";
 import { cn } from "@/lib/utils";
 
 export default function Toolbar() {
   const {
     flowName, flowStatus, nodes,
-    setFlowName, runFlow, stopFlow, exportFlow, clearCanvas, loadDemoFlow,
+    setFlowName, stopFlow, exportFlow, clearCanvas, loadDemoFlow,
     toggleLog, isLogVisible, isAgentXOpen, setAgentXOpen,
+    setPipelineTriggerOpen,
   } = useFlowStore();
 
+  const { isActivityOpen, toggleActivity, transactions } = useActivityStore();
+
   const isRunning = flowStatus === "running";
+  const pendingTxCount = transactions.filter((t) =>
+    t.phase === "pending" || t.phase === "awaiting_signature" || t.phase === "preparing"
+  ).length;
 
   const openSaveModal = () => { window.dispatchEvent(new CustomEvent("flowmon:open-save-modal")); };
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) { const reader = new FileReader(); reader.onload = (re) => { useFlowStore.getState().importFlow(re.target?.result as string); }; reader.readAsText(file); }
     e.target.value = "";
+  };
+
+  const handleRunClick = () => {
+    if (nodes.length === 0) return;
+    setPipelineTriggerOpen(true);
   };
 
   const btnBase = "flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] rounded-md transition-colors";
@@ -60,7 +72,22 @@ export default function Toolbar() {
       <div className="w-px h-5" style={{ background: "var(--purple-border)" }} />
 
       <button onClick={toggleLog} className={cn(btnBase, isLogVisible ? "bg-[#836EF915]" : btnIdle)} style={{ color: isLogVisible ? "var(--purple-primary)" : "var(--text-secondary)" }}>Logs</button>
+
       <button onClick={() => setAgentXOpen(!isAgentXOpen)} className={cn(btnBase, isAgentXOpen ? "bg-[#836EF915]" : btnIdle)} style={{ color: isAgentXOpen ? "var(--purple-primary)" : "var(--text-secondary)" }}><Bot size={13} /><span className="hidden sm:inline">Agent X</span></button>
+
+      {/* Activity toggle */}
+      <button onClick={toggleActivity} className={cn(btnBase, isActivityOpen ? "bg-[#836EF915]" : btnIdle, "relative")} style={{ color: isActivityOpen ? "var(--purple-primary)" : "var(--text-secondary)" }}>
+        <Activity size={13} />
+        <span className="hidden sm:inline">Activity</span>
+        {pendingTxCount > 0 && (
+          <span
+            className="absolute -top-1 -right-1 text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center"
+            style={{ background: "var(--purple-primary)", color: "var(--bg-base)" }}
+          >
+            {pendingTxCount}
+          </span>
+        )}
+      </button>
 
       <div className="w-px h-5" style={{ background: "var(--purple-border)" }} />
 
@@ -73,7 +100,7 @@ export default function Toolbar() {
       {isRunning ? (
         <button onClick={stopFlow} className="flex items-center gap-2 px-4 py-1.5 text-[12px] font-semibold rounded-md transition-colors" style={{ background: "var(--red-error)", color: "white" }}><Square size={12} /> Stop</button>
       ) : (
-        <button onClick={runFlow} disabled={nodes.length === 0}
+        <button onClick={handleRunClick} disabled={nodes.length === 0}
           className="flex items-center gap-2 px-4 py-1.5 text-[12px] font-semibold rounded-md transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           style={{ background: nodes.length === 0 ? "var(--bg-elevated)" : "var(--purple-primary)", color: nodes.length === 0 ? "var(--text-muted)" : "var(--bg-base)" }}>
           <Play size={12} /> Run Flow

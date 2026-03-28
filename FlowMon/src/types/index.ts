@@ -91,6 +91,34 @@ export interface ExecutionLogEntry {
   data?: Record<string, unknown>;
 }
 
+// ── Negotiation types ────────────────────────────────────────
+
+export interface NegotiationMessage {
+  role: "user" | "assistant";
+  agentId: string;
+  agentName: string;
+  content: string;
+  timestamp: Date;
+}
+
+export interface NegotiationSession {
+  sessionId: string;
+  participants: string[];
+  messages: NegotiationMessage[];
+  status: "active" | "resolved" | "failed";
+  resolution?: string;
+}
+
+// ── Publish Agent types ──────────────────────────────────────
+
+export interface PublishAgentFormValues {
+  name: string;
+  sponsor: string;
+  category: AgentCategory;
+  description: string;
+  endpointUrl: string;
+}
+
 /** A group of nodeIds that can execute concurrently */
 export type ExecutionGroup = string[];
 
