@@ -40,3 +40,5 @@ pnpm-debug.log*
 next-env.d.ts
 agentflow-main
 .env.local
+.vercel
+.env*.local
